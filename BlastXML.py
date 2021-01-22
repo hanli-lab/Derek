@@ -7,7 +7,9 @@ from Bio import Entrez
 
 def blast_dataframe(blast_records): 
     diction = {}
-    genes = []
+    Source_Database = []
+    Accessions = []
+    Description = []
     length = []
     hsp_qseq = []
     hsp_hseq = []
@@ -25,7 +27,11 @@ def blast_dataframe(blast_records):
     hsp_gaps = []
     for blast_record in blast_records:
         for alignment in blast_record.alignments:
-            genes.append( alignment.title )
+            rawtitle = alignment.title
+            parts = rawtitle.strip().split('|')
+            Source_Database.append( parts[0] )
+            Accessions.append( parts[1] )
+            Description.append( parts[2])
             length.append( alignment.length)
             for h,hsp in enumerate(alignment.hsps):
                 #print(hsp)
@@ -46,7 +52,9 @@ def blast_dataframe(blast_records):
                 hsp_query_end.append(hsp.query_end)
                 hsp_sbjct_end.append(hsp.sbjct_end)
                 hsp_gaps.append(hsp.gaps)
-    diction =    {'genes': genes,
+    diction =    {'Source_Database' : Source_Database,
+                  'Accessions' : Accessions,
+                  'Description' : Description,
                   'length': length,
                   'hsp_qseq' : hsp_qseq, 
                   'hsp_hseq' : hsp_hseq,
@@ -65,7 +73,7 @@ def blast_dataframe(blast_records):
                  } 
     keys = [key for key in diction]
     df = pd.DataFrame(diction,columns = keys) 
-    return df.set_index('genes')
+    return df.set_index('Accessions')
 
 def add_to_df_and_plot(orig_dataframe, dictionary_of_matches_,collabel,dom_q):
     lis = list(dictionary_of_matches_.keys())
@@ -141,7 +149,8 @@ def df_append_accesions(dataframe):
     return dataframe   
 
 def writeAccessionsFasta(dataframe,filename): #requires import of Entrez from Bio module
-    handle = Entrez.efetch(db="protein", id= dataframe['Accessions'], rettype="fasta", retmode="text")
+    Entrez.email = 'daspacio@uci.edu' #You will get an email if you excessively use the Entrez webserver for NCBI database lookups
+    handle = Entrez.efetch(db="protein", id= dataframe.index, rettype="fasta", retmode="text")
     fasta = open(filename, "w")
     print('writing accessions to '+ filename + '...')
     for line in handle:
