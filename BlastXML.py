@@ -120,7 +120,7 @@ def get_position(df, posi,Expected_WT_Residue):
         q = qseq[gene]
         qindex = int(qi[gene])
         for gap in gaploc[gene]:
-            if ((pos - qindex) >= (gap)):
+            if ((pos - qindex + shift) > (gap)):
                 shift +=1   
         q_pos = pos - qindex + shift
         if  len(q) > q_pos and q_pos > 0:
