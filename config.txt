@@ -1,0 +1,11 @@
+>DAD Peaks
+Gluconate = 8.7
+
+
+Pyruvate = 10.74
+
+>RID Peaks
+Glucose&gluconate = 9
+Pyruvate = 11
+>Tolerance = 0.2
+
